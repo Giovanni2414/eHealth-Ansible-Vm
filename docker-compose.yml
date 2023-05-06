@@ -46,6 +46,15 @@ services:
       # This needs explicit mapping due to https://github.com/docker-library/postgres/blob/4e48e3228a30763913ece952c611e5e9b95c8759/Dockerfile.template#L52
       - postgresql_data:/var/lib/postgresql/data
 
+  socat:
+    image: alpine/socat
+    container_name: jenkins-docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "2375:2375"
+    command: tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
+
 volumes:
   jenkins-data: {}
   jenkins-home: {}
