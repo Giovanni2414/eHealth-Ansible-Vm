@@ -152,6 +152,16 @@
           docker-plugin
           nodejs
 
+    - name: Modificar configuración de seguridad de Jenkins
+      jenkins_script:
+        script: |
+          import jenkins.model.Jenkins
+          import hudson.security.csrf.DefaultCrumbIssuer
+
+          jenkins = Jenkins.getInstance()
+          csrf = DefaultCrumbIssuer.DISABLE_CSRF_PROTECTION
+          jenkins.setCrumbIssuer(csrf)
+
     - name: Instalar plugins en Jenkins
       jenkins_plugin:
         name: "{{ item }}"
