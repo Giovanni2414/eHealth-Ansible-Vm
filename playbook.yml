@@ -1,6 +1,8 @@
 - name: Instalación de Docker y Docker Compose en Ubuntu
   hosts: jenkins
   become: true
+  vars:
+    jenkins_java_version: "11"
 
   tasks:
     # Actualizar el cache de paquetes
