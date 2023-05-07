@@ -2,7 +2,33 @@
   hosts: jenkins
   become: true
   vars:
-    jenkins_java_version: "11"
+    plugin_names:
+      - ant:latest
+      - antisamy-markup-formatter:latest
+      - build-timeout:latest
+      - cloudbees-folder:latest
+      - configuration-as-code:latest
+      - credentials-binding:latest
+      - email-ext:latest
+      - git:latest
+      - github-branch-source:latest
+      - gradle:latest
+      - ldap:latest
+      - mailer:latest
+      - matrix-auth:latest
+      - pam-auth:latest
+      - pipeline-github-lib:latest
+      - pipeline-stage-view:latest
+      - ssh-slaves:latest
+      - timestamper:latest
+      - workflow-aggregator:latest
+      - ws-cleanup:latest
+      - job-dsl:latest
+      - blueocean:latest
+      - authorize-project:latest
+      - sonar:latest
+      - docker-plugin:latest
+      - nodejs:latest
 
   tasks:
     # Actualizar el cache de paquetes
@@ -126,11 +152,17 @@
           docker-plugin:latest
           nodejs:latest
 
-    - name: Instalar plugins jenkins
-      command: jenkins-plugin-cli --plugin-file /jenkins-plugins.txt
-      become_user: "{{ ansible_user }}"
-      become_method: su
-      notify: restart jenkins
+    - name: Instalar plugins en Jenkins
+      jenkins_plugin:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ plugin_names }}"
+
+    #- name: Instalar plugins jenkins
+    #  command: jenkins-plugin-cli --plugin-file /jenkins-plugins.txt
+    #  become_user: "{{ ansible_user }}"
+    #  become_method: su
+    #  notify: restart jenkins
 
   #handlers:
   #  - name: restart jenkins
