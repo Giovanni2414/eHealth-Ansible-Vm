@@ -63,12 +63,12 @@
         repo: "ppa:openjdk-r/ppa"
         state: present
 
-    - name: Agregar clave del repositorio de Jenkins
+    - name: Agregar la clave pública de Jenkins
       apt_key:
-        url: https://pkg.jenkins.io/debian/jenkins.io.key
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
         state: present
 
-    - name: Agregar repositorio de Jenkins
+    - name: Agregar el repositorio de Jenkins
       apt_repository:
         repo: deb https://pkg.jenkins.io/debian-stable binary/
         state: present
@@ -107,6 +107,7 @@
       service:
         name: jenkins
         state: started
+        enabled: yes
 
     - name: Establecer vm.max_map_count en el kernel
       sysctl:
