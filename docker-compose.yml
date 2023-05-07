@@ -1,7 +1,7 @@
 version: "3"
 services:
   jenkins:
-    image: xgiovanni/jenkinsci-with-plugins:v2
+    image: xgiovanni/jenkinsci-with-plugins:v1
     container_name: jenkins
     environment:
       - DOCKER_HOST=tcp://localhost:2375

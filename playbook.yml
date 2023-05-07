@@ -1,34 +1,6 @@
 - name: Instalación de Docker y Docker Compose en Ubuntu
   hosts: jenkins
   become: true
-  vars:
-    plugin_names:
-      - ant:latest
-      - antisamy-markup-formatter:latest
-      - build-timeout:latest
-      - cloudbees-folder:latest
-      - configuration-as-code:latest
-      - credentials-binding:latest
-      - email-ext:latest
-      - git:latest
-      - github-branch-source:latest
-      - gradle:latest
-      - ldap:latest
-      - mailer:latest
-      - matrix-auth:latest
-      - pam-auth:latest
-      - pipeline-github-lib:latest
-      - pipeline-stage-view:latest
-      - ssh-slaves:latest
-      - timestamper:latest
-      - workflow-aggregator:latest
-      - ws-cleanup:latest
-      - job-dsl:latest
-      - blueocean:latest
-      - authorize-project:latest
-      - sonar:latest
-      - docker-plugin:latest
-      - nodejs:latest
 
   tasks:
     # Actualizar el cache de paquetes
@@ -58,21 +30,6 @@
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
         state: present
 
-    - name: Agregar repositorio de OpenJDK
-      apt_repository:
-        repo: "ppa:openjdk-r/ppa"
-        state: present
-
-    - name: Agregar clave del repositorio de Jenkins
-      apt_key:
-        url: https://pkg.jenkins.io/debian/jenkins.io.key
-        state: present
-
-    - name: Agregar repositorio de Jenkins
-      apt_repository:
-        repo: deb https://pkg.jenkins.io/debian-stable binary/
-        state: present
-
     # Actualizar el cache de paquetes de nuevo (para que encuentre el paquete de Docker)
     - name: Actualizar el cache de paquetes de nuevo (para que encuentre el paquete de Docker)
       apt:
@@ -91,23 +48,13 @@
         groups: docker
         append: yes
 
-    # Instalar Java
-    - name: Instalar Java
-      apt:
-        name: openjdk-11-jdk
-        state: present
-
-    - name: Instalar Jenkins
-      apt:
-        name: jenkins
-        state: present
-
-    # Iniciar Jenkins
-    - name: Iniciar Jenkins
-      service:
-        name: jenkins
-        state: started
-        enabled: yes
+    # Instalar Docker Compose
+    - name: Instalar Docker Compose
+      shell: |
+        curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+      args:
+        creates: /usr/local/bin/docker-compose
 
     - name: Establecer vm.max_map_count en el kernel
       sysctl:
@@ -116,67 +63,27 @@
         state: present
         reload: yes
 
-    - name: Crear archivo de texto
-      file:
-        path: /jenkins-plugins.txt
-        state: touch
+    - name: Copiar archivo de configuración de Nginx
+      copy:
+        src: docker-compose.yml
+        dest: /home/{{ ansible_user }}/docker-compose.yml
 
-    - name: Insertar plugins en el archivo texto
-      blockinfile:
-        path: /jenkins-plugins.txt
-        backup: yes
-        block: |
-          ant
-          antisamy-markup-formatter
-          build-timeout
-          cloudbees-folder
-          configuration-as-code
-          credentials-binding
-          email-ext
-          git
-          github-branch-source
-          gradle
-          ldap
-          mailer
-          matrix-auth
-          pam-auth
-          pipeline-github-lib
-          pipeline-stage-view
-          ssh-slaves
-          timestamper
-          workflow-aggregator
-          ws-cleanup
-          job-dsl
-          blueocean
-          authorize-project
-          sonar
-          docker-plugin
-          nodejs
+    # Ejecutar un archivo docker-compose.yml
+    - name: Ejecutar docker-compose.yml
+      command: docker-compose up -d
+      args:
+        chdir: /home/{{ ansible_user }}/
+      become_user: "{{ ansible_user }}"
+      become_method: su
 
-    - name: Modificar configuración de seguridad de Jenkins
-      jenkins_script:
-        script: |
-          import jenkins.model.Jenkins
-          import hudson.security.csrf.DefaultCrumbIssuer
+    - name: Instalar plugins jenkins
+      command: docker exec -it jenkins jenkins-plugin-cli --plugin-file /plugins.txt
+      become_user: "{{ ansible_user }}"
+      become_method: su
+      notify: restart jenkins
 
-          jenkins = Jenkins.getInstance()
-          csrf = DefaultCrumbIssuer.DISABLE_CSRF_PROTECTION
-          jenkins.setCrumbIssuer(csrf)
-
-    - name: Instalar plugins en Jenkins
-      jenkins_plugin:
-        name: "{{ item }}"
-        state: present
-      loop: "{{ plugin_names }}"
-
-    #- name: Instalar plugins jenkins
-    #  command: jenkins-plugin-cli --plugin-file /jenkins-plugins.txt
-    #  become_user: "{{ ansible_user }}"
-    #  become_method: su
-    #  notify: restart jenkins
-
-  #handlers:
-  #  - name: restart jenkins
-  #    command: sudo docker restart jenkins
-  #    become_user: "{{ ansible_user }}"
-  #    become_method: su
+  handlers:
+    - name: restart jenkins
+      command: sudo docker restart jenkins
+      become_user: "{{ ansible_user }}"
+      become_method: su
