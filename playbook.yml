@@ -90,9 +90,15 @@
         reload: yes
 
     - name: Crear archivo de texto
-      copy:
-        dest: /ruta/del/archivo/ejemplo.txt
-        content: |
+      file:
+        path: /jenkins-plugins.txt
+        state: touch
+
+    - name: Insertar plugins en el archivo texto
+      blockinfile:
+        path: /jenkins-plugins.txt
+        backup: yes
+        block: |
           ant:latest
           antisamy-markup-formatter:latest
           build-timeout:latest
