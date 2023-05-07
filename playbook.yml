@@ -54,10 +54,12 @@
         name: openjdk-{{ jenkins_java_version }}-jdk
         state: present
 
-    - name: Agregar repositorio de Jenkins
+    - name: Agregar clave del repositorio de Jenkins
       apt_key:
         url: https://pkg.jenkins.io/debian/jenkins.io.key
         state: present
+
+    - name: Agregar repositorio de Jenkins
       apt_repository:
         repo: deb https://pkg.jenkins.io/debian-stable binary/
         state: present
