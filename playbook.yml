@@ -82,16 +82,6 @@
         name: jenkins
         state: started
 
-    # Instalar Docker Compose
-    #- name: Instalar Docker Compose
-    #  shell: |
-    #    curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    #    chmod +x /usr/local/bin/docker-compose
-    #  args:
-    #    creates: /usr/local/bin/docker-compose
-    # [jenkins]
-    # jenkins-host ansible_host=
-
     - name: Establecer vm.max_map_count en el kernel
       sysctl:
         name: vm.max_map_count
@@ -99,21 +89,8 @@
         state: present
         reload: yes
 
-    #- name: Copiar archivo de configuración de Nginx
-    #  copy:
-    #    src: docker-compose.yml
-    #    dest: /home/{{ ansible_user }}/docker-compose.yml
-
-    # Ejecutar un archivo docker-compose.yml
-    #- name: Ejecutar docker-compose.yml
-    #  command: docker-compose up -d
-    #  args:
-    #    chdir: /home/{{ ansible_user }}/
-    #  become_user: "{{ ansible_user }}"
-    #  become_method: su
-
     - name: Instalar plugins jenkins
-      command: jenkins-plugin-cli --plugin-file /plugins.txt
+      command: jenkins-plugin-cli --plugin-file {{ ansible_playbook_dir }}/jenkins-plugins.txt
       become_user: "{{ ansible_user }}"
       become_method: su
       notify: restart jenkins
