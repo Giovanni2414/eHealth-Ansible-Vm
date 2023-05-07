@@ -32,6 +32,21 @@
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
         state: present
 
+    - name: Agregar repositorio de OpenJDK
+      apt_repository:
+        repo: "ppa:openjdk-r/ppa"
+        state: present
+
+    - name: Agregar clave del repositorio de Jenkins
+      apt_key:
+        url: https://pkg.jenkins.io/debian/jenkins.io.key
+        state: present
+
+    - name: Agregar repositorio de Jenkins
+      apt_repository:
+        repo: deb https://pkg.jenkins.io/debian-stable binary/
+        state: present
+
     # Actualizar el cache de paquetes de nuevo (para que encuentre el paquete de Docker)
     - name: Actualizar el cache de paquetes de nuevo (para que encuentre el paquete de Docker)
       apt:
@@ -53,17 +68,7 @@
     # Instalar Java
     - name: Instalar Java
       apt:
-        name: default-jdk
-        state: present
-
-    - name: Agregar clave del repositorio de Jenkins
-      apt_key:
-        url: https://pkg.jenkins.io/debian/jenkins.io.key
-        state: present
-
-    - name: Agregar repositorio de Jenkins
-      apt_repository:
-        repo: deb https://pkg.jenkins.io/debian-stable binary/
+        name: openjdk-11-jdk
         state: present
 
     - name: Instalar Jenkins
@@ -84,6 +89,8 @@
     #    chmod +x /usr/local/bin/docker-compose
     #  args:
     #    creates: /usr/local/bin/docker-compose
+    # [jenkins]
+    # jenkins-host ansible_host=
 
     - name: Establecer vm.max_map_count en el kernel
       sysctl:
