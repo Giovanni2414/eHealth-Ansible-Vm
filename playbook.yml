@@ -90,7 +90,7 @@
         reload: yes
 
     - name: Instalar plugins jenkins
-      command: jenkins-plugin-cli --plugin-file {{ ansible_playbook_dir }}/jenkins-plugins.txt
+      command: jenkins-plugin-cli --plugin-file ./jenkins-plugins.txt
       become_user: "{{ ansible_user }}"
       become_method: su
       notify: restart jenkins
