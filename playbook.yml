@@ -89,8 +89,43 @@
         state: present
         reload: yes
 
+    - name: Crear archivo de texto
+      file:
+        path: /jenkins-plugins.txt
+        state: touch
+        mode: "0644"
+        owner: usuario
+        group: grupo
+        content: |
+          ant:latest
+          antisamy-markup-formatter:latest
+          build-timeout:latest
+          cloudbees-folder:latest
+          configuration-as-code:latest
+          credentials-binding:latest
+          email-ext:latest
+          git:latest
+          github-branch-source:latest
+          gradle:latest
+          ldap:latest
+          mailer:latest
+          matrix-auth:latest
+          pam-auth:latest
+          pipeline-github-lib:latest
+          pipeline-stage-view:latest
+          ssh-slaves:latest
+          timestamper:latest
+          workflow-aggregator:latest
+          ws-cleanup:latest
+          job-dsl:latest
+          blueocean:latest
+          authorize-project:latest
+          sonar:latest
+          docker-plugin:latest
+          nodejs:latest
+
     - name: Instalar plugins jenkins
-      command: jenkins-plugin-cli --plugin-file ./jenkins-plugins.txt
+      command: jenkins-plugin-cli --plugin-file /jenkins-plugins.txt
       become_user: "{{ ansible_user }}"
       become_method: su
       notify: restart jenkins
