@@ -90,12 +90,8 @@
         reload: yes
 
     - name: Crear archivo de texto
-      file:
-        path: /jenkins-plugins.txt
-        state: touch
-        mode: "0644"
-        owner: usuario
-        group: grupo
+      copy:
+        dest: /ruta/del/archivo/ejemplo.txt
         content: |
           ant:latest
           antisamy-markup-formatter:latest
