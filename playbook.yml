@@ -8,6 +8,11 @@
       apt:
         update_cache: yes
 
+    - name: Instala OpenJDK 11
+      apt:
+        name: "openjdk-11-jdk"
+        state: present
+
     # Instalar dependencias para Docker
     - name: Instalar dependencias para Docker
       apt:
@@ -24,10 +29,20 @@
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
 
+    - name: Agrega la clave GPG del repositorio de Kubernetes
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
     # Agregar el repositorio de Docker al sources.list.d
     - name: Agregar el repositorio de Docker al sources.list.d
       apt_repository:
         repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
+        state: present
+
+    - name: Agrega el repositorio de Kubernetes
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
         state: present
 
     # Actualizar el cache de paquetes de nuevo (para que encuentre el paquete de Docker)
@@ -62,6 +77,11 @@
         value: "262144"
         state: present
         reload: yes
+
+    - name: Instala el paquete kubectl
+      apt:
+        name: kubectl
+        state: present
 
     - name: Copiar archivo de configuración de Nginx
       copy:
