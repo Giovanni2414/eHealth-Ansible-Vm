@@ -96,6 +96,12 @@
       become_user: "{{ ansible_user }}"
       become_method: su
 
+    - name: Instalar Azure CLI
+      command: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+    - name: Iniciar sesión en el Azure Container Registry
+      command: az acr login --name azrK8s -u {{ container_registry_name }} -p {{ container_registry_password }}
+
     - name: Instalar plugins jenkins
       command: docker exec -it jenkins jenkins-plugin-cli --plugin-file /plugins.txt
       become_user: "{{ ansible_user }}"
