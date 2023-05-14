@@ -97,7 +97,9 @@
       become_method: su
 
     - name: Instalar Azure CLI
-      command: sudo yum install https://packages.microsoft.com/yumrepos/azure-cli/azure-cli-2.38.0-1.el7.x86_64.rpm
+      command: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      become_user: "{{ ansible_user }}"
+      become_method: su
 
     - name: Iniciar sesión en el Azure Container Registry
       command: az acr login --name azrK8s -u {{ container_registry_name }} -p {{ container_registry_password }}
