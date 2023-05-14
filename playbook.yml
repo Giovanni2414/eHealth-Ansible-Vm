@@ -13,6 +13,11 @@
         name: "openjdk-11-jdk"
         state: present
 
+    - name: Instalar NodeJS
+      apt:
+        name: "npm"
+        state: present
+
     # Instalar dependencias para Docker
     - name: Instalar dependencias para Docker
       apt:
@@ -109,9 +114,6 @@
         state: present
       become: true
       become_method: sudo
-
-    - name: Iniciar sesión en el Azure Container Registry
-      command: az acr login --name azrK8s -u {{ container_registry_name }} -p {{ container_registry_password }}
 
     - name: Instalar plugins jenkins
       command: docker exec -it jenkins jenkins-plugin-cli --plugin-file /plugins.txt
