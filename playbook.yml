@@ -96,10 +96,19 @@
       become_user: "{{ ansible_user }}"
       become_method: su
 
-    - name: Instalar Azure CLI
-      command: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-      become_user: "{{ ansible_user }}"
-      become_method: su
+    - name: Instalar Python 3
+      apt:
+        name: python3-pip
+        state: present
+      become: true
+      become_method: sudo
+
+    - name: Instalar azure-cli
+      pip:
+        name: azure-cli
+        state: present
+      become: true
+      become_method: sudo
 
     - name: Iniciar sesión en el Azure Container Registry
       command: az acr login --name azrK8s -u {{ container_registry_name }} -p {{ container_registry_password }}
