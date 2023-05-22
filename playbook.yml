@@ -88,6 +88,10 @@
         name: kubectl
         state: present
 
+    - name: Creacion Kubectl Secret para el Frontend
+      become: true
+      command: kubectl create secret docker-registry frontendacr --docker-server={{ acr_frontend_user }}.azurecr.io --docker-username={{ acr_frontend_user }} --docker-password={{ acr_frontend_pwd }} --docker-email={{ acr_email }} --namespace={{ k8s_namespace }}
+
     - name: Copiar archivo de configuración de Nginx
       copy:
         src: docker-compose.yml
